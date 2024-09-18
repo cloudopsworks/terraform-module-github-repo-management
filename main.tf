@@ -37,7 +37,19 @@ resource "github_repository" "repo" {
   }
 }
 
+resource "time_sleep" "repo" {
+  for_each        = local.repos
+  create_duration = "30s"
+
+  depends_on = [
+    github_repository.repo
+  ]
+}
+
 resource "github_repository_file" "pipeline_config" {
+  depends_on = [
+    time_sleep.repo
+  ]
   for_each            = local.repos
   repository          = github_repository.repo[each.key].name
   file                = ".github/cloudopsworks-ci.yaml"
