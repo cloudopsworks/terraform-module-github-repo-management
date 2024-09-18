@@ -22,17 +22,19 @@
 #       push:
 #         - cloudopsworks/engineering
 #       maintain: []
-#     reviewers:
-#       - cloudopsworks/engineering
-#       - cloudopsworks/devops
-#       - cloudopsworks/security
-#     owners:
-#       - cloudopsworks/engineering
-#       - cloudopsworks/devops
+#     access:
+#       reviewers:
+#         - cloudopsworks/engineering
+#         - cloudopsworks/devops
+#        - cloudopsworks/security
+#       owners:
+#         - cloudopsworks/engineering
+#         - cloudopsworks/devops
 #     build:
 #       version: LANGUAGE_VERSION
 #       dist: DIST
-#     sonarqube_disabled: true | false
+#     sonarqube:
+#       disabled: true | false # Enabled by default
 #     dependency_track:
 #       disabled: true # Enabled by default
 #       type: Library | Application

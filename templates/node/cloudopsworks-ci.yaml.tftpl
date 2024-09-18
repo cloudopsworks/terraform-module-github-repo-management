@@ -50,9 +50,9 @@ config:
   requiredReviewers: 1
 
   # Required: needed if not automatic or protection is true
-  %{~ if length(try(reviewers, [])) > 0 ~}
+  %{~ if length(try(access.reviewers, [])) > 0 ~}
   reviewers:
-    %{~ for reviewer in reviewers ~}
+    %{~ for reviewer in access.reviewers ~}
     - "${reviewer}"
     %{~ endfor ~}
   %{~ else ~}
@@ -61,9 +61,9 @@ config:
 
   # Required: needed for permit owners to perform commits under protected branches.
   # Teams are specified as org/team-name
-  %{~ if length(try(owners, [])) > 0 ~}
+  %{~ if length(try(access.owners, [])) > 0 ~}
     owners:
-      %{~ for owner in owners ~}
+      %{~ for owner in access.owners ~}
       - "${owner}"
       %{~ endfor ~}
   %{~ else ~}
@@ -128,7 +128,7 @@ build:
 %{~ endif ~}
 #
 #   # Set Sonarqube processing to false if want to disable, the tool is enabled by default
-%{~ if try(sonarqube_disabled, false) ~}
+%{~ if try(sonarqube.disabled, false) ~}
   sonarqube:
     enabled: false
 %{~ else ~}
