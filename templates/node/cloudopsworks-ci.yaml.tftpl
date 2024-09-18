@@ -115,7 +115,7 @@ config:
 
 #
 ## Default node version is 20, uncomment to build with different
-%{~ if try(build.version, "") != "" && try(build.dist, "") ~}
+%{~ if try(build.version, "") != "" && try(build.dist, "") != "" ~}
 build:
   node:
     version: ${build.version}

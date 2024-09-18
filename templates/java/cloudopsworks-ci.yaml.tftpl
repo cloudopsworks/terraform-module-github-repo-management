@@ -112,7 +112,7 @@ config:
 
 #
 ## Default Java version is 17, uncomment to build with different JDK
-%{~ if try(build.version, "") != "" && try(build.dist, "") ~}
+%{~ if try(build.version, "") != "" && try(build.dist, "") != "" ~}
 build:
   java:
     version: ${build.version}
