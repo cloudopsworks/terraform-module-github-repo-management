@@ -1,0 +1,228 @@
+##
+# (c) 2021 - Cloud Ops Works LLC - https://cloudops.works/
+#            On GitHub: https://github.com/cloudopsworks
+#            Distributed Under Apache v2.0 License
+#
+pipeline:
+  - docker
+zipGlobs:
+  - node_modules/**
+  - ./**
+  - .env
+excludeGlobs:
+  - Dockerfile
+  - .helmignore
+  - .dockerignore
+  - .git*
+  - .git/
+  - OWNER*
+  - README.md
+  - jenkins*
+  - target/*
+  - charts/*
+  - cloudopsworks-ci*
+  - skafold*
+  - gulpfile*
+
+# Repo & CD Configurations
+# Some of them previously managed in OWNERS file
+# now are managed from here
+config:
+  # Configure repository to enable branch protection
+  # https://docs.github.com/en/rest/reference/repos#update-branch-protection
+  branchProtection: true
+  # Configure the repository to use Git Flow and or support Branches enablement
+  gitFlow:
+    enabled: true
+    supportBranches: false
+  # Protected sources rules (future implementation)
+  protectedSources:
+    - "*.tf"
+    - "*.tfvars"
+    - OWNERS
+    - Makefile
+    - .github
+
+  # Optional only needed if not automatic or protection is true & Further review is needed for merging on Master/Main
+  requiredReviewers: 1
+
+  # Required: needed if not automatic or protection is true
+  %{~ if length(try(reviewers, [])) > 0 ~}
+  reviewers:
+    %{~ for reviewer in reviewers ~}
+    - "${reviewer}"
+    %{~ endfor ~}
+  %{~ else ~}
+  reviewers: []
+  %{~ endif ~}
+
+  # Required: needed for permit owners to perform commits under protected branches.
+  # Teams are specified as org/team-name
+  %{~ if length(try(owners, [])) > 0 ~}
+    owners:
+      %{~ for owner in owners ~}
+      - "${owner}"
+      %{~ endfor ~}
+  %{~ else ~}
+  owners: []
+  %{~ endif ~}
+
+  # Optional configure the repository members
+  contributors:
+    %{~ if length(try(contributors.admin, [])) > 0 ~}
+    admin:
+      %{~ for admin in contributors.admin ~}
+      - "${admin}"
+      %{~ endfor ~}
+    %{~ else ~}
+    admin: []
+    %{~ endif ~}
+    %{~ if length(try(contributors.triage, [])) > 0 ~}
+    triage:
+      %{~ for triage in contributors.triage ~}
+      - "${triage}"
+      %{~ endfor ~}
+    %{~ else ~}
+    triage: []
+    %{~ endif ~}
+    %{~ if length(try(contributors.pull, [])) > 0 ~}
+    pull:
+      %{~ for pull in contributors.pull ~}
+      - "${pull}"
+      %{~ endfor ~}
+    %{~ else ~}
+    pull: []
+    %{~ endif ~}
+    %{~ if length(try(contributors.push, [])) > 0 ~}
+    push:
+      %{~ for push in contributors.push ~}
+      - "${push}"
+      %{~ endfor ~}
+    %{~ else ~}
+    push: []
+    %{~ endif ~}
+    %{~ if length(try(contributors.maintain, [])) > 0 ~}
+    maintain:
+      %{~ for maintain in contributors.maintain ~}
+      - "${maintain}"
+      %{~ endfor ~}
+    %{~ else ~}
+    maintain: []
+    %{~ endif ~}
+
+#
+## Default node version is 20, uncomment to build with different
+%{~ if try(build.version, "") != "" && try(build.dist, "") ~}
+build:
+  node:
+    version: ${build.version}
+    dist: ${build.dist}
+%{~ else ~}
+# build:
+#   node:
+#     version: 12
+#     dist: adopt
+%{~ endif ~}
+#
+#   # Set Sonarqube processing to false if want to disable, the tool is enabled by default
+%{~ if try(sonarqube_disabled, false) ~}
+  sonarqube:
+    enabled: false
+%{~ else ~}
+#   sonarqube:
+#     enabled: false
+%{~ endif ~}
+#   # Set DependencyTrack processing to false if want to disable, the tool is enabled by default
+#   # type: is one of => Library , Application , Container , Framework , Device , Firmware , File , Operating System
+#   #       Default type is Library
+%{~ if try(dependency_track.disabled, false) || try(dependency_track.type, "") != "" ~}
+  dependencyTrack:
+    %{~ if try(dependency_track.disabled, false) ~}
+    enabled: false
+    %{~ endif ~}
+    %{~ if try(dependency_track.type, "") != "" ~}
+    type: ${dependency_track.type}
+    %{~ endif ~}
+%{~ else ~}
+#   dependencyTrack:
+#     enabled: false
+#     type: Library
+%{~ endif ~}
+#
+
+## CD pipeline configuration uncomment and configure accordingly to enable
+cd:
+  # Target Cloud
+  %{~ if try(cd.cloud, "") != "" ~}
+  cloud: ${cd.cloud}
+  %{~ else ~}
+  cloud: aws | azure | gcp
+  %{~ endif ~}
+  # Indicate that the environment makes automatic merges and deploys on lower environments
+  automatic: false
+  # Indicate the Runner that will be used for the deployment - usually will be a hosted runner
+  # runner_set: "arc-runner-set"
+
+  # These deployment environments are fixed by the GitFlow workflow
+  # targetName are optional for most deployments but are required for support branches.
+  #
+  # The criteria for each deployment are as follow:
+  #   Pushes to 'develop'       -> develop
+  #   Pushes to 'release/**'    -> test
+  #   Push TAG on 'release/**'  -> prerelease    - Tags are in the form v*.*.*-[alpha|beta].*
+  #                                   /targets   - Tags are in the form v*.*.*-[alpha|beta].*+deploy-.*
+  #   Push TAG on 'main|master' -> release       - Tags are in the strict form v*.*.*
+  #                                   /targets   - Tags are in the form v*.*.*+deploy-.*
+  #   Push TAG on 'support/**'  -> support x.y.*
+  #
+  # Previews are run on pull requests from hotfix/** or feature/** branches into any of the development / main branches
+  deployments:
+    develop:
+      #variables:
+      #  var1: value1
+      #  var2: value2
+      # Sample variables to deploy into different account
+      #  DEPLOYMENT_AWS_REGION: us-east-1
+      #  DEPLOYMENT_STS_ROLE_ARN: arn:aws:iam::123456789012:role/TerraformAccessRole
+      #legacyDeliveryPush: true
+      #enabled: false
+      env: dev
+      #targetName: dev-target
+    release:
+      #variables:
+      #  var1: value1
+      #  var2: value2
+      #reviewers: false # defaults to true
+      #legacyDeliveryPush: true
+      env: prod
+      #targetName: prod-target
+      #targets:
+      #  my-target:
+      #    env: prod-my-target
+      #    targetName: prod-my-target
+      #    #legacyDeliveryPush: true
+    test:
+      #variables:
+      #  var1: value1
+      #  var2: value2
+      #enabled: false
+      #legacyDeliveryPush: true
+      env: uat
+      #targetName: uat-target
+    prerelease:
+      #variables:
+      #  var1: value1
+      #  var2: value2
+      #reviewers: false # defaults to true
+      #legacyDeliveryPush: true
+      #enabled: false
+      env: demo
+      #targetName: demo-target
+      #targets:
+      #  my-target:
+      #    env: demo-my-target
+      #    targetName: demo-my-target
+      #    #legacyDeliveryPush: true
+    hotfix:
+      env: hotfix
+      #targetName: hotfix-target

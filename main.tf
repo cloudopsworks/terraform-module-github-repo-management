@@ -16,15 +16,24 @@ locals {
 }
 
 resource "github_repository" "repo" {
-  for_each    = local.repos
-  name        = each.key
-  description = try(each.value.description, "")
-  visibility  = try(each.value.public, false) ? "public" : "private"
+  for_each           = local.repos
+  name               = each.key
+  description        = try(each.value.description, "")
+  visibility         = try(each.value.public, false) ? "public" : "private"
   archive_on_destroy = true
 
   template {
     owner                = "cloudopsworks"
-    repository           = "${each.value.template}-app-template"
+    repository           = "${each.value.language}-app-template"
     include_all_branches = try(each.value.include_all_branches, false)
   }
+}
+
+resource "github_repository_file" "pipeline_config" {
+  for_each            = local.repos
+  repository          = github_repository.repo[each.key].name
+  file                = ".github/cloudopsworks-ci.yaml"
+  content             = templatefile("${path.module}/templates/${each.value.language}/cloudopsworks-ci.yaml.tftpl", try(each.value.cicd_config, {}))
+  commit_message      = "Initial CI/CD Configuration"
+  overwrite_on_create = true
 }
