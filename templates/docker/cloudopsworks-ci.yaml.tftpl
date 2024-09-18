@@ -59,10 +59,10 @@ config:
   # Required: needed for permit owners to perform commits under protected branches.
   # Teams are specified as org/team-name
   %{~ if length(try(access.owners, [])) > 0 ~}
-    owners:
-      %{~ for owner in access.owners ~}
-      - "${owner}"
-      %{~ endfor ~}
+  owners:
+    %{~ for owner in access.owners ~}
+    - "${owner}"
+    %{~ endfor ~}
   %{~ else ~}
   owners: []
   %{~ endif ~}
