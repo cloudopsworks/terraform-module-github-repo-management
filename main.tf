@@ -44,6 +44,10 @@ resource "time_sleep" "repo" {
   depends_on = [
     github_repository.repo
   ]
+
+  triggers = {
+    repo = github_repository.repo[each.key].repo_id
+  }
 }
 
 resource "github_repository_file" "pipeline_config" {
