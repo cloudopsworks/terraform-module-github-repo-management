@@ -1,5 +1,5 @@
 ##
-# (c) 2021 - Cloud Ops Works LLC - https://cloudops.works/
+# (c) 2024 - Cloud Ops Works LLC - https://cloudops.works/
 #            On GitHub: https://github.com/cloudopsworks
 #            Distributed Under Apache v2.0 License
 #
@@ -23,6 +23,7 @@ excludeGlobs:
   - cloudopsworks-ci*
   - skafold*
   - gulpfile*
+  - tronador/*
 
 # Repo & CD Configurations
 # Some of them previously managed in OWNERS file
@@ -109,46 +110,6 @@ config:
     %{~ else ~}
     maintain: []
     %{~ endif ~}
-
-#
-## Default node version is 20, uncomment to build with different
-%{~ if try(build.version, "") != "" && try(build.dist, "") ~}
-build:
-  node:
-    version: ${build.version}
-    dist: ${build.dist}
-%{~ else ~}
-# build:
-#   node:
-#     version: 12
-#     dist: adopt
-%{~ endif ~}
-#
-#   # Set Sonarqube processing to false if want to disable, the tool is enabled by default
-%{~ if try(sonarqube.disabled, false) ~}
-  sonarqube:
-    enabled: false
-%{~ else ~}
-#   sonarqube:
-#     enabled: false
-%{~ endif ~}
-#   # Set DependencyTrack processing to false if want to disable, the tool is enabled by default
-#   # type: is one of => Library , Application , Container , Framework , Device , Firmware , File , Operating System
-#   #       Default type is Library
-%{~ if try(dependency_track.disabled, false) || try(dependency_track.type, "") != "" ~}
-  dependencyTrack:
-    %{~ if try(dependency_track.disabled, false) ~}
-    enabled: false
-    %{~ endif ~}
-    %{~ if try(dependency_track.type, "") != "" ~}
-    type: ${dependency_track.type}
-    %{~ endif ~}
-%{~ else ~}
-#   dependencyTrack:
-#     enabled: false
-#     type: Library
-%{~ endif ~}
-#
 
 ## CD pipeline configuration uncomment and configure accordingly to enable
 cd:
