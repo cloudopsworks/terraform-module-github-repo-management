@@ -3,9 +3,6 @@
 #            On GitHub: https://github.com/cloudopsworks
 #            Distributed Under Apache v2.0 License
 #
-pipeline:
-  - docker
-  - node_build
 zipGlobs:
   - node_modules/**
   - ./**
@@ -25,6 +22,9 @@ excludeGlobs:
   - skafold*
   - gulpfile*
   - tronador/*
+  - .tronador
+  - Makefile
+  - apifiles/*
 
 # Repo & CD Configurations
 # Some of them previously managed in OWNERS file
@@ -153,8 +153,7 @@ cd:
       #  var2: value2
       # Sample variables to deploy into different account
       #  DEPLOYMENT_AWS_REGION: us-east-1
-      #  DEPLOYMENT_STS_ROLE_ARN: arn:aws:iam::123456789012:role/TerraformAccessRole
-      #legacyDeliveryPush: true
+      #  DEPLOYMENT_AWS_STS_ROLE_ARN: arn:aws:iam::123456789012:role/TerraformAccessRole
       #enabled: false
       env: dev
       #targetName: dev-target
@@ -163,20 +162,17 @@ cd:
       #  var1: value1
       #  var2: value2
       #reviewers: false # defaults to true
-      #legacyDeliveryPush: true
       env: prod
       #targetName: prod-target
-      #targets:
-      #  my-target:
-      #    env: prod-my-target
-      #    targetName: prod-my-target
-      #    #legacyDeliveryPush: true
+#      targets:
+#        my-target:
+#          env: prod-my-target
+#          targetName: prod-my-target
     test:
       #variables:
       #  var1: value1
       #  var2: value2
       #enabled: false
-      #legacyDeliveryPush: true
       env: uat
       #targetName: uat-target
     prerelease:
@@ -184,15 +180,13 @@ cd:
       #  var1: value1
       #  var2: value2
       #reviewers: false # defaults to true
-      #legacyDeliveryPush: true
       #enabled: false
       env: demo
       #targetName: demo-target
-      #targets:
-      #  my-target:
-      #    env: demo-my-target
-      #    targetName: demo-my-target
-      #    #legacyDeliveryPush: true
+#      targets:
+#        my-target:
+#          env: demo-my-target
+#          targetName: demo-my-target
     hotfix:
       env: hotfix
       #targetName: hotfix-target
@@ -203,9 +197,3 @@ cd:
       - match: 1.3.*
         env: demo2
         targetName: demo2
-  preview:
-    enabled: false
-    kubernetes: true
-    domain: example.com
-  apis:
-    enabled: false
