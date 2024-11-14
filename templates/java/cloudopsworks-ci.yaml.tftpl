@@ -113,18 +113,6 @@ config:
 
 ## CD pipeline configuration uncomment and configure accordingly to enable
 cd:
-  # Target Cloud
-  %{~ if try(cd.cloud, "") != "" ~}
-  cloud: ${cd.cloud}
-  %{~ else ~}
-  cloud: aws | azure | gcp
-  %{~ endif ~}
-  # Cloud deployment type depends on the target cloud
-  %{~ if try(cd.cloud_type, "") != "" ~}
-  cloud_type: ${cd.cloud_type}
-  %{~ else ~}
-  cloud_type: elasticbeanstalk | eks | lambda | aks | webapp | function | gke | function
-  %{~ endif ~}
   # Indicate that the environment makes automatic merges and deploys on lower environments
   automatic: false
 

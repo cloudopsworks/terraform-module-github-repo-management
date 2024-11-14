@@ -114,12 +114,6 @@ config:
 
 ## CD pipeline configuration uncomment and configure accordingly to enable
 cd:
-  # Target Cloud
-  %{~ if try(cd.cloud, "") != "" ~}
-  cloud: ${cd.cloud}
-  %{~ else ~}
-  cloud: aws | azure | gcp
-  %{~ endif ~}
   # Indicate that the environment makes automatic merges and deploys on lower environments
   automatic: false
 
