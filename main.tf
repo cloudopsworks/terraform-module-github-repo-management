@@ -5,6 +5,48 @@
 #
 
 locals {
+  lang_map = {
+    java = {
+      template = "java-app-template"
+      ci       = true
+    }
+    node = {
+      template = "node-app-template"
+      ci       = true
+    }
+    ruby = {
+      template = "ruby-app-template"
+      ci       = true
+    }
+    docker = {
+      template = "docker-app-template"
+      ci       = true
+    }
+    go = {
+      template = "go-app-template"
+      ci       = true
+    }
+    kotlin = {
+      template = "kotlin-app-template"
+      ci       = true
+    }
+    python = {
+      template = "python-app-template"
+      ci       = true
+    }
+    xcode = {
+      template = "xcode-app-template"
+      ci       = true
+    }
+    terraform = {
+      template = "terraform-project-template"
+      ci       = true
+    }
+    terraform-module = {
+      template = "terraform-module-template"
+      ci       = false
+    }
+  }
   repos = merge({
     for repo in var.repositories : repo.name => repo
     if try(repo.name, "") != ""
@@ -32,7 +74,7 @@ resource "github_repository" "repo" {
 
   template {
     owner                = "cloudopsworks"
-    repository           = "${each.value.language}-app-template"
+    repository           = local.lang_map[each.value.language].template
     include_all_branches = try(each.value.include_all_branches, false)
   }
 }
@@ -54,7 +96,10 @@ resource "github_repository_file" "pipeline_config" {
   depends_on = [
     time_sleep.repo
   ]
-  for_each            = local.repos
+  for_each = {
+    for k, v in local.repos : k => v
+    if local.lang_map[v.language].ci
+  }
   repository          = github_repository.repo[each.key].name
   file                = ".github/cloudopsworks-ci.yaml"
   content             = templatefile("${path.module}/templates/${each.value.language}/cloudopsworks-ci.yaml.tftpl", merge(local.default_cicd_config, try(each.value.cicd_config, {})))

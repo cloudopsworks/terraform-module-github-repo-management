@@ -9,7 +9,7 @@
 # - name: REPO_NAME
 #   #prefix_name: REPO_PREFIX_NAME (optional, name will be used if not provided)
 #   description: REPO_DESCRIPTION
-#   language: java | node | ruby | docker | go | kotlin | python
+#   language: java | node | ruby | docker | go | kotlin | python | terraform | terraform-module
 #   public: true | false
 #   include_all_branches: true | false
 #   cicd_config:
