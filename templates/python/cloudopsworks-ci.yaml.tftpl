@@ -4,9 +4,12 @@
 #            Distributed Under Apache v2.0 License
 #
 zipGlobs:
-  - node_modules/**
-  - ./**
-  - .env
+  - "app/**/*"
+  - "*.py"
+  - "*.pyc"
+  - "*.pyo"
+  - "requirements.txt"
+  - "pyproject.toml"
 excludeGlobs:
   - Dockerfile
   - .helmignore
@@ -19,15 +22,22 @@ excludeGlobs:
   - target/*
   - charts/*
   - cloudopsworks-ci*
-  - skafold*
-  - gulpfile*
   - tronador/*
   - .tronador
   - Makefile
   - apifiles/*
-  - .nyc_output/*
-  - coverage/*
+  - .Python
+  - .env
+  - ENV
+  - poetry.lock
+  - .venv
+  - env/
+  - venv/
   - bom.xml
+  - .coverage
+  - coverage.xml
+  - test-results.xml
+  - htmlcov/*
 
 # Repo & CD Configurations
 # Some of them previously managed in OWNERS file
