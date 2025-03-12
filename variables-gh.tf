@@ -12,6 +12,7 @@
 #   language: java | node | ruby | docker | go | kotlin | python | terraform | terraform-module
 #   public: true | false
 #   include_all_branches: true | false
+#   model_repository: org/model-repo
 #   cicd_config:
 #     contributors:
 #       admin:

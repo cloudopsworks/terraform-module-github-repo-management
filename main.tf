@@ -73,8 +73,8 @@ resource "github_repository" "repo" {
   archive_on_destroy = true
 
   template {
-    owner                = "cloudopsworks"
-    repository           = local.lang_map[each.value.language].template
+    owner                = try(each.value.model_repository, "") != "" ? split("/", each.value.model_repository)[0] : "cloudopsworks"
+    repository           = try(each.value.model_repository, "") != "" ? split("/", each.value.model_repository)[1] : local.lang_map[each.value.language].template
     include_all_branches = try(each.value.include_all_branches, false)
   }
 }
