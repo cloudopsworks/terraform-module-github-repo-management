@@ -1,4 +1,4 @@
-name: Terraform Transit Gateway Module
+name: Terraform GitHub Repository Management
 #logo: logo/logo.jpg
 
 license: "APACHE2"
@@ -8,10 +8,13 @@ copyrights:
     url: "https://cloudops.works"
     year: "2024"
 
-github_repo: cloudopsworks/terraform-module-aws-vpc-setup
+github_repo: cloudopsworks/terraform-module-github-repo-management
 
 description: |-
-  VPC Module for setting up transit gateway with ResourceAccessMananger support.
+  **Terraform GitHub Repository Management** is a Terraform module designed to help you automate and standardize the
+  creation and ongoing management of GitHub repositories. It streamlines tasks like configuring repository settings, 
+  managing access levels, and integrating with both GitHub-native and third-party services—without the need to switch 
+  between multiple interfaces.
 
 # Introduction to the project
 #introduction: |-
