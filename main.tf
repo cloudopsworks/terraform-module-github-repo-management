@@ -26,6 +26,14 @@ locals {
       template = "go-app-template"
       ci       = true
     }
+    dotnet = {
+      template = "dotnet-app-template"
+      ci       = true
+    }
+    rust = {
+      template = "rust-app-template"
+      ci       = true
+    }
     kotlin = {
       template = "kotlin-app-template"
       ci       = true
