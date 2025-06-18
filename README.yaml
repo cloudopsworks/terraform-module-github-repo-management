@@ -17,17 +17,160 @@ description: |-
   between multiple interfaces.
 
 # Introduction to the project
-#introduction: |-
-#  This is an introduction.
+introduction: |-
+  This Terraform module provides comprehensive GitHub repository management capabilities with features including:
+
+  - Automated repository creation and configuration
+  - Branch protection rules management
+  - Access control and team permissions
+  - Integration with GitHub Actions
+  - Repository secrets management
+  - Issue labels and templates setup
 
 # How to use this project
-#usage: |-
+usage: |-
+  To use this module in your Terragrunt configuration:
+
+  ```hcl
+  terraform {
+    source = "git::https://github.com/cloudopsworks/terraform-module-github-repo-management.git?ref=v1.0.0"
+  }
+
+  inputs = {
+    repositories = [
+      {
+        name = "my-repository"
+        description = "Repository description"
+        language = "java"
+        public = false
+        include_all_branches = false
+        model_repository = "org/model-repo"
+        cicd_config = {
+          contributors = {
+            admin = ["cloudopsworks/admin"]
+            triage = []
+            pull = []
+            push = ["cloudopsworks/engineering"]
+            maintain = []
+          }
+          access = {
+            reviewers = [
+              "cloudopsworks/engineering",
+              "cloudopsworks/devops",
+              "cloudopsworks/security"
+            ]
+            owners = [
+              "cloudopsworks/engineering",
+              "cloudopsworks/devops"
+            ]
+          }
+          build = {
+            version = "17"
+            dist = "temurin"
+          }
+          sonarqube = {
+            disabled = false
+          }
+          dependency_track = {
+            disabled = false
+            type = "Application"
+          }
+          cd = {
+            cloud = "aws"
+            cloud_type = "eks"
+          }
+        }
+      }
+    ]
+  }
+  ```
+
+  The `repositories` variable accepts an array of repository configurations with the following structure:
+
+  - `name`: Repository name
+  - `prefix_name`: (Optional) Repository prefix name
+  - `description`: Repository description
+  - `language`: One of: java, node, ruby, docker, go, kotlin, python, terraform, terraform-module
+  - `public`: Boolean flag for public/private repository
+  - `include_all_branches`: Boolean to include all branches
+  - `model_repository`: Model repository path (org/repo-name)
+  - `cicd_config`: CI/CD configuration object
+    - `contributors`: Repository contributors configuration
+      - `admin`: List of admin teams/users
+      - `triage`: List of triage teams/users
+      - `pull`: List of pull teams/users
+      - `push`: List of push teams/users
+      - `maintain`: List of maintain teams/users
+    - `access`: Repository access configuration
+      - `reviewers`: List of reviewer teams
+      - `owners`: List of owner teams
+    - `build`: Build configuration
+      - `version`: Language version
+      - `dist`: Distribution type
+    - `sonarqube`: SonarQube configuration
+      - `disabled`: Boolean to disable SonarQube
+    - `dependency_track`: Dependency Track configuration
+      - `disabled`: Boolean to disable Dependency Track
+      - `type`: Type (Library or Application)
+    - `cd`: Continuous Deployment configuration
+      - `cloud`: Cloud provider (aws, azure, gcp)
+      - `cloud_type`: Deployment type (elasticbeanstalk, eks, lambda, etc.)
 
 # Example usage
-#examples: |-
+examples: |-
+  Example Terragrunt structure:
+
+  ```
+  .
+  ├── terragrunt.hcl
+  └── repositories/
+      ├── terragrunt.hcl
+      ├── prod/
+      │   ├── terragrunt.hcl
+      │   └── main-app/
+      │       └── terragrunt.hcl
+      └── dev/
+          ├── terragrunt.hcl
+          └── test-app/
+              └── terragrunt.hcl
+  ```
+
+  Root terragrunt.hcl:
+  ```hcl
+  remote_state {
+    backend = "s3"
+    config = {
+      bucket = "terraform-state"
+      key    = "${path_relative_to_include()}/terraform.tfstate"
+      region = "us-east-1"
+    }
+  }
+  ```
 
 # How to get started quickly
-#quickstart: |-
+quickstart: |-
+  1. Install required tools:
+     - Terraform >= 1.0
+     - Terragrunt >= 0.36
+
+  2. Configure GitHub authentication:
+     ```bash
+     export GITHUB_TOKEN="your-token"
+     ```
+
+  3. Create a new Terragrunt project:
+     ```bash
+     mkdir my-github-repos && cd my-github-repos
+     ```
+
+  4. Create terragrunt.hcl with the module configuration
+
+  5. Initialize and apply:
+     ```bash
+     terragrunt init
+     terragrunt plan
+     terragrunt apply
+     ```
 
 include:
   - "docs/targets.md"
