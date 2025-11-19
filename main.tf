@@ -112,7 +112,7 @@ resource "github_repository_file" "pipeline_config" {
     if local.lang_map[v.language].ci
   }
   repository          = github_repository.repo[each.key].name
-  file                = ".github/cloudopsworks-ci.yaml"
+  file                = ".cloudopsworks/cloudopsworks-ci.yaml"
   content             = templatefile("${path.module}/templates/${each.value.language}/cloudopsworks-ci.yaml.tftpl", merge(local.default_cicd_config, try(each.value.cicd_config, {})))
   commit_message      = "Initial CI/CD Configuration"
   overwrite_on_create = true
