@@ -57,6 +57,10 @@ locals {
       template = "terraform-module-template"
       ci       = false
     }
+    androidsdk = {
+        template = "androidsdk-app-template"
+        ci       = true
+    }
   }
   path_map = {
     "v5.9" = ".github"
