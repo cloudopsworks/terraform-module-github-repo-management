@@ -123,7 +123,7 @@ resource "github_repository_file" "pipeline_config" {
   file                = "${local.path_map[try(each.value.blueprint, "v5.10")]}/cloudopsworks-ci.yaml"
   content             = templatefile("${path.module}/templates/${each.value.language}/cloudopsworks-ci.yaml.tftpl", merge(local.default_cicd_config, try(each.value.cicd_config, {})))
   commit_message      = "Initial CI/CD Configuration"
-  overwrite_on_create = try(each.value.overwrite_on_create, false)
+  overwrite_on_create = try(each.value.overwrite_on_create, true)
 
   lifecycle {
     ignore_changes = [
