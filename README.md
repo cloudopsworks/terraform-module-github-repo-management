@@ -90,6 +90,10 @@ terragrunt apply
 Generated `inputs.yaml` example:
 
 ```yaml
+# GitHub provider configuration
+github:
+  org: "my-github-org" # (Required) GitHub organization name. Used to configure the GitHub Terraform provider owner.
+
 # Module configuration
 repositories: [] # (Optional) Repository specifications to create and configure. Default: []. Uncomment and edit the example below.
 #  - name: "sample-api" # (Required) Repository name when prefix_name is not used.
@@ -156,6 +160,17 @@ include "root" {
   path = find_in_parent_folders("root.hcl")
 }
 
+# Generates the GitHub provider block using github.org from inputs.yaml (Required)
+generate "provider_github" {
+  path      = "provider.l.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<EOF
+provider "github" {
+  owner = "${local.local_vars.github.org}"
+}
+EOF
+}
+
 terraform {
   source = "github.com/cloudopsworks/terraform-module-github-repo-management"
 }
@@ -183,7 +198,7 @@ inputs = {
    terragrunt scaffold github.com/cloudopsworks/terraform-module-github-repo-management
    ```
 
-3. Edit `inputs.yaml` and set at least one repository entry under `repositories`.
+3. Edit `inputs.yaml`: set `github.org` to your GitHub organization name (required for the provider block), then add at least one repository entry under `repositories`.
 
 4. Preview and apply:
    ```bash
@@ -291,8 +306,8 @@ Available targets:
 
 | Name | Version |
 |------|---------|
-| <a name="provider_github"></a> [github](#provider\_github) | ~> 6.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | n/a |
+| <a name="provider_github"></a> [github](#provider\_github) | 6.4.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
 
 ## Modules
 

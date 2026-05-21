@@ -1,3 +1,7 @@
+# GitHub provider configuration
+github:
+  org: "my-github-org" # (Required) GitHub organization name. Used to configure the GitHub Terraform provider owner.
+
 # Module configuration
 repositories: [] # (Optional) Repository specifications to create and configure. Default: []. Uncomment and edit the example below.
 #  - name: "sample-api" # (Required) Repository name when prefix_name is not used.
