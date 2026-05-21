@@ -1,5 +1,5 @@
 ##
-# (c) 2021-2025
+# (c) 2021-2026
 #     Cloud Ops Works LLC - https://cloudops.works/
 #     Find us on:
 #       GitHub: https://github.com/cloudopsworks
@@ -58,12 +58,20 @@ locals {
       ci       = false
     }
     androidsdk = {
-        template = "androidsdk-app-template"
-        ci       = true
+      template = "androidsdk-app-template"
+      ci       = true
+    }
+    flutter = {
+      template = "fluttermobile-app-template"
+      ci       = true
+    }
+    fluttermobile = {
+      template = "fluttermobile-app-template"
+      ci       = true
     }
   }
   path_map = {
-    "v5.9" = ".github"
+    "v5.9"  = ".github"
     "v5.10" = ".cloudopsworks"
   }
   repos = merge({
