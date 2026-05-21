@@ -24,6 +24,17 @@ include "root" {
   path = find_in_parent_folders("{{ .RootFileName }}")
 }
 
+# generate github provider block
+generate "provider_github" {
+  path      = "provider.l.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<EOF
+provider "github" {
+  owner = "${local.local_vars.github.org}"
+}
+EOF
+}
+
 terraform {
   source = "{{ .sourceUrl }}"
 }
