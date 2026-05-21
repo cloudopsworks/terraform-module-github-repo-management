@@ -1,6 +1,14 @@
 name: Terraform GitHub Repository Management
 #logo: logo/logo.jpg
 
+badges:
+  - name: Latest Release
+    image: https://img.shields.io/github/release/cloudopsworks/terraform-module-github-repo-management.svg?style=for-the-badge
+    url: https://github.com/cloudopsworks/terraform-module-github-repo-management/releases/latest
+  - name: Last Updated
+    image: https://img.shields.io/github/last-commit/cloudopsworks/terraform-module-github-repo-management.svg?style=for-the-badge
+    url: https://github.com/cloudopsworks/terraform-module-github-repo-management/commits
+
 license: "APACHE2"
 
 copyrights:
@@ -11,163 +19,221 @@ copyrights:
 github_repo: cloudopsworks/terraform-module-github-repo-management
 
 description: |-
-  **Terraform GitHub Repository Management** is a Terraform module designed to help you automate and standardize the
-  creation and ongoing management of GitHub repositories. It streamlines tasks like configuring repository settings, 
-  managing access levels, and integrating with both GitHub-native and third-party services—without the need to switch 
-  between multiple interfaces.
+  Terraform module for creating and standardizing GitHub repositories from CloudOpsWorks language templates. It
+  provisions repositories, selects the correct template, renders CloudOpsWorks CI/CD configuration, and supports
+  repository access, branch-protection ownership, build, code-quality, dependency, and deployment settings from a
+  single Terragrunt inputs file.
 
 # Introduction to the project
 introduction: |-
-  This Terraform module provides comprehensive GitHub repository management capabilities with features including:
+  This module manages GitHub repositories as repeatable infrastructure. Operators provide a list of repository
+  definitions, and the module:
 
-  - Automated repository creation and configuration
-  - Branch protection rules management
-  - Access control and team permissions
-  - Integration with GitHub Actions
-  - Repository secrets management
-  - Issue labels and templates setup
+  - creates each GitHub repository from a selected language or platform template;
+  - supports explicit repository names or environment-derived names using `prefix_name`;
+  - writes CloudOpsWorks CI/CD configuration to `.cloudopsworks/cloudopsworks-ci.yaml` by default;
+  - supports legacy `.github/cloudopsworks-ci.yaml` placement with `blueprint: "v5.9"`;
+  - renders contributor, reviewer, owner, build, SonarQube, Dependency-Track, and CD settings into the template;
+  - includes Flutter / fluttermobile repository template support alongside the existing language templates.
+
+  Supported `language` values are `androidsdk`, `docker`, `dotnet`, `fluttermobile`, `flutter`, `go`, `java`,
+  `kotlin`, `node`, `python`, `ruby`, `rust`, `terraform`, `terraform-module`, and `xcode`.
 
 # How to use this project
 usage: |-
-  To use this module in your Terragrunt configuration:
+  Bootstrap a deployment with Terragrunt scaffold. Scaffold writes `terragrunt.hcl`, `inputs.yaml`, and
+  `local-tags.json` into the current directory, so create and enter the target directory first.
+
+  ```sh
+  # 1. Create and enter the target deployment directory
+  mkdir -p prod/us-east-1/core/github-repos
+  cd prod/us-east-1/core/github-repos
+
+  # 2. Scaffold the module (do NOT use --working-dir)
+  terragrunt scaffold github.com/cloudopsworks/terraform-module-github-repo-management
+
+  # 3. Edit inputs.yaml with deployment-specific values
+  #    (all keys and comments are pre-populated from .boilerplate/inputs.yaml)
+  vi inputs.yaml
+
+  # 4. Apply
+  terragrunt apply
+  ```
+
+  Generated `inputs.yaml` example:
+
+  ```yaml
+  # Module configuration
+  repositories: [] # (Optional) Repository specifications to create and configure. Default: []. Uncomment and edit the example below.
+  #  - name: "sample-api" # (Required) Repository name when prefix_name is not used.
+  #    prefix_name: "sample" # (Optional) Prefix used to generate "<prefix>-<org_unit>-<environment>-<type>" repository names. Default: null.
+  #    description: "Sample API repository" # (Optional) GitHub repository description. Default: "".
+  #    language: "java" # (Required) Template language. Valid values: androidsdk, docker, dotnet, fluttermobile, flutter, go, java, kotlin, node, python, ruby, rust, terraform, terraform-module, xcode.
+  #    public: false # (Optional) Set true for a public repository; false creates a private repository. Default: false.
+  #    include_all_branches: false # (Optional) Copy every branch from the template repository. Default: false.
+  #    model_repository: "cloudopsworks/java-app-template" # (Optional) Override template repository as "owner/name". Default: selected by language.
+  #    blueprint: "v5.10" # (Optional) Blueprint generation path. Valid values: v5.9 writes .github/cloudopsworks-ci.yaml; v5.10 writes .cloudopsworks/cloudopsworks-ci.yaml. Default: v5.10.
+  #    overwrite_on_create: true # (Optional) Replace an existing CI/CD config file during initial repository creation. Default: true.
+  #    cicd_config: # (Optional) Values rendered into the language CI/CD template. Default: {}.
+  #      access: # (Optional) Branch-protection reviewers and owners. Default: no reviewers or owners.
+  #        reviewers: # (Optional) GitHub users or teams required for review, teams as org/team-slug. Default: [].
+  #          - "cloudopsworks/engineering"
+  #        owners: # (Optional) GitHub users or teams allowed to administer protected branches. Default: [].
+  #          - "cloudopsworks/admin"
+  #      contributors: # (Optional) Repository collaborators and team permissions. Default: no contributors.
+  #        admin: [] # (Optional) Users or teams with admin permission. Default: [].
+  #        maintain: [] # (Optional) Users or teams with maintain permission. Default: [].
+  #        push: # (Optional) Users or teams with push permission. Default: [].
+  #          - "cloudopsworks/engineering"
+  #        triage: [] # (Optional) Users or teams with triage permission. Default: [].
+  #        pull: [] # (Optional) Users or teams with pull permission. Default: [].
+  #      build: # (Optional) Language build settings consumed by selected templates. Default: {}.
+  #        version: "17" # (Optional) Runtime, SDK, or toolchain version. Default: template-specific.
+  #        dist: "temurin" # (Optional) Runtime distribution when supported. Default: template-specific.
+  #      sonarqube: # (Optional) SonarQube integration settings. Default: enabled by template.
+  #        disabled: false # (Optional) Disable SonarQube when true. Default: false.
+  #      dependency_track: # (Optional) Dependency-Track integration settings. Default: enabled by template.
+  #        disabled: false # (Optional) Disable Dependency-Track when true. Default: false.
+  #        type: "Application" # (Optional) Project classifier. Valid values: Application, Library. Default: Application.
+  #      cd: # (Optional) Continuous-delivery settings rendered into the CI/CD config. Default: {}.
+  #        cloud: "aws" # (Optional) Deployment cloud. Valid values depend on template; common values: aws, azure, gcp. Default: unset.
+  #        cloud_type: "eks" # (Optional) Deployment target type such as eks, lambda, elasticbeanstalk, aks, webapp, function, gke. Default: unset.
+  ```
+
+  Generated `terragrunt.hcl` shape:
 
   ```hcl
+  locals {
+    local_vars  = yamldecode(file("./inputs.yaml"))
+    spoke_vars  = yamldecode(file(find_in_parent_folders("spoke-inputs.yaml")))
+    region_vars = yamldecode(file(find_in_parent_folders("region-inputs.yaml")))
+    env_vars    = yamldecode(file(find_in_parent_folders("env-inputs.yaml")))
+    global_vars = yamldecode(file(find_in_parent_folders("global-inputs.yaml")))
+
+    local_tags  = jsondecode(file("./local-tags.json"))
+    spoke_tags  = jsondecode(file(find_in_parent_folders("spoke-tags.json")))
+    region_tags = jsondecode(file(find_in_parent_folders("region-tags.json")))
+    env_tags    = jsondecode(file(find_in_parent_folders("env-tags.json")))
+    global_tags = jsondecode(file(find_in_parent_folders("global-tags.json")))
+
+    tags = merge(
+      local.global_tags,
+      local.env_tags,
+      local.region_tags,
+      local.spoke_tags,
+      local.local_tags
+    )
+  }
+
+  include "root" {
+    path = find_in_parent_folders("root.hcl")
+  }
+
   terraform {
-    source = "git::https://github.com/cloudopsworks/terraform-module-github-repo-management.git?ref=v1.0.0"
+    source = "github.com/cloudopsworks/terraform-module-github-repo-management"
   }
 
   inputs = {
-    repositories = [
-      {
-        name = "my-repository"
-        description = "Repository description"
-        language = "java"
-        public = false
-        include_all_branches = false
-        model_repository = "org/model-repo"
-        cicd_config = {
-          contributors = {
-            admin = ["cloudopsworks/admin"]
-            triage = []
-            pull = []
-            push = ["cloudopsworks/engineering"]
-            maintain = []
-          }
-          access = {
-            reviewers = [
-              "cloudopsworks/engineering",
-              "cloudopsworks/devops",
-              "cloudopsworks/security"
-            ]
-            owners = [
-              "cloudopsworks/engineering",
-              "cloudopsworks/devops"
-            ]
-          }
-          build = {
-            version = "17"
-            dist = "temurin"
-          }
-          sonarqube = {
-            disabled = false
-          }
-          dependency_track = {
-            disabled = false
-            type = "Application"
-          }
-          cd = {
-            cloud = "aws"
-            cloud_type = "eks"
-          }
-        }
-      }
-    ]
+    is_hub     = false
+    org        = local.env_vars.org
+    spoke_def  = local.spoke_vars.spoke
+    repositories = local.local_vars.repositories
+    extra_tags = local.tags
   }
   ```
-
-  The `repositories` variable accepts an array of repository configurations with the following structure:
-
-  - `name`: Repository name
-  - `prefix_name`: (Optional) Repository prefix name
-  - `description`: Repository description
-  - `language`: One of: java, node, ruby, docker, go, kotlin, python, terraform, terraform-module
-  - `public`: Boolean flag for public/private repository
-  - `include_all_branches`: Boolean to include all branches
-  - `model_repository`: Model repository path (org/repo-name)
-  - `cicd_config`: CI/CD configuration object
-    - `contributors`: Repository contributors configuration
-      - `admin`: List of admin teams/users
-      - `triage`: List of triage teams/users
-      - `pull`: List of pull teams/users
-      - `push`: List of push teams/users
-      - `maintain`: List of maintain teams/users
-    - `access`: Repository access configuration
-      - `reviewers`: List of reviewer teams
-      - `owners`: List of owner teams
-    - `build`: Build configuration
-      - `version`: Language version
-      - `dist`: Distribution type
-    - `sonarqube`: SonarQube configuration
-      - `disabled`: Boolean to disable SonarQube
-    - `dependency_track`: Dependency Track configuration
-      - `disabled`: Boolean to disable Dependency Track
-      - `type`: Type (Library or Application)
-    - `cd`: Continuous Deployment configuration
-      - `cloud`: Cloud provider (aws, azure, gcp)
-      - `cloud_type`: Deployment type (elasticbeanstalk, eks, lambda, etc.)
 
 # Example usage
 examples: |-
-  Example Terragrunt structure:
+  Manage a mixed set of service, infrastructure, and mobile repositories from one deployment:
 
-  ```
-  .
-  ├── terragrunt.hcl
-  └── repositories/
-      ├── terragrunt.hcl
-      ├── prod/
-      │   ├── terragrunt.hcl
-      │   └── main-app/
-      │       └── terragrunt.hcl
-      └── dev/
-          ├── terragrunt.hcl
-          └── test-app/
-              └── terragrunt.hcl
+  ```yaml
+  repositories:
+    - name: "payments-api"
+      description: "Payments Java service"
+      language: "java"
+      public: false
+      include_all_branches: false
+      blueprint: "v5.10"
+      cicd_config:
+        access:
+          reviewers:
+            - "cloudopsworks/engineering"
+          owners:
+            - "cloudopsworks/admin"
+        contributors:
+          push:
+            - "cloudopsworks/engineering"
+        build:
+          version: "21"
+          dist: "temurin"
+        sonarqube:
+          disabled: false
+        dependency_track:
+          disabled: false
+          type: "Application"
+        cd:
+          cloud: "aws"
+          cloud_type: "eks"
+
+    - name: "mobile-wallet"
+      description: "Flutter mobile application"
+      language: "flutter"
+      public: false
+      blueprint: "v5.10"
+      cicd_config:
+        access:
+          reviewers:
+            - "cloudopsworks/mobile"
+          owners:
+            - "cloudopsworks/admin"
+        contributors:
+          push:
+            - "cloudopsworks/mobile"
+        build:
+          version: "3.24"
+        dependency_track:
+          disabled: false
+          type: "Application"
+
+    - prefix_name: "platform"
+      description: "Environment-scoped Terraform project repository"
+      language: "terraform"
+      public: false
+      include_all_branches: true
+      cicd_config:
+        access:
+          reviewers:
+            - "cloudopsworks/devops"
+          owners:
+            - "cloudopsworks/admin"
   ```
 
-  Root terragrunt.hcl:
-  ```hcl
-  remote_state {
-    backend = "s3"
-    config = {
-      bucket = "terraform-state"
-      key    = "${path_relative_to_include()}/terraform.tfstate"
-      region = "us-east-1"
-    }
-  }
-  ```
+  Notes:
+
+  - `name` creates a repository with the exact provided name.
+  - `prefix_name` creates a repository named `<prefix_name>-<organization_unit>-<environment_name>-<environment_type>`.
+  - `model_repository` overrides the default CloudOpsWorks template selected by `language`.
+  - `terraform-module` creates the repository from the module template but does not write a CI/CD config file.
+  - `blueprint: "v5.10"` writes `.cloudopsworks/cloudopsworks-ci.yaml`; `blueprint: "v5.9"` writes `.github/cloudopsworks-ci.yaml`.
 
 # How to get started quickly
 quickstart: |-
-  1. Install required tools:
-     - Terraform >= 1.0
-     - Terragrunt >= 0.36
-
-  2. Configure GitHub authentication:
+  1. Export a GitHub token with permissions to create repositories and write repository files:
      ```bash
-     export GITHUB_TOKEN="your-token"
+     export GITHUB_TOKEN="<github-token>"
      ```
 
-  3. Create a new Terragrunt project:
+  2. Scaffold a deployment directory:
      ```bash
-     mkdir my-github-repos && cd my-github-repos
+     mkdir -p prod/us-east-1/core/github-repos
+     cd prod/us-east-1/core/github-repos
+     terragrunt scaffold github.com/cloudopsworks/terraform-module-github-repo-management
      ```
 
-  4. Create terragrunt.hcl with the module configuration
+  3. Edit `inputs.yaml` and set at least one repository entry under `repositories`.
 
-  5. Initialize and apply:
+  4. Preview and apply:
      ```bash
-     terragrunt init
      terragrunt plan
      terragrunt apply
      ```

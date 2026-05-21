@@ -1,5 +1,5 @@
 ##
-# (c) 2021-2025
+# (c) 2021-2026
 #     Cloud Ops Works LLC - https://cloudops.works/
 #     Find us on:
 #       GitHub: https://github.com/cloudopsworks
@@ -8,11 +8,11 @@
 #
 
 terraform {
-  required_version = ">= 1.3"
+  required_version = ">= 1.7"
   # Complete with required providers for the module
   required_providers {
     github = {
-      source = "integrations/github"
+      source  = "integrations/github"
       version = "~> 6.0"
     }
   }
