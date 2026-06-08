@@ -39,8 +39,8 @@ config:
   branchProtection: true
   # Configure the repository to use Git Flow and or support Branches enablement
   gitFlow:
-    enabled: true
-    supportBranches: false
+    enabled: ${gitflow.enabled}
+    supportBranches: ${gitflow.supportBranchesEnabled}
   # Protected sources rules (future implementation)
   protectedSources:
     - "*.tf"
@@ -50,7 +50,7 @@ config:
     - .github
 
   # Optional only needed if not automatic or protection is true & Further review is needed for merging on Master/Main
-  requiredReviewers: 1
+  requiredReviewers: ${gitflow.requiredReviewers}
 
   # Required: needed if not automatic or protection is true
   %{~ if length(try(access.reviewers, [])) > 0 ~}
@@ -119,7 +119,7 @@ config:
 ## CD pipeline configuration uncomment and configure accordingly to enable
 cd:
   # Indicate that the environment makes automatic merges and deploys on lower environments
-  automatic: false
+  automatic: ${cd.automatic}
 
   # These deployment environments are fixed by the GitFlow workflow
   # targetName are optional for most deployments but are required for support branches.
@@ -135,6 +135,7 @@ cd:
   #
   # Previews are run on pull requests from hotfix/** or feature/** branches into any of the development / main branches
   deployments:
+%{~ if gitflow.enabled ~}
     develop:
       #variables:
       #  var1: value1
@@ -145,6 +146,7 @@ cd:
       #enabled: false
       env: dev
       #targetName: dev-target
+%{~ endif ~}
     release:
       #variables:
       #  var1: value1
@@ -156,6 +158,7 @@ cd:
 #        my-target:
 #          env: prod-my-target
 #          targetName: prod-my-target
+%{~ if gitflow.enabled ~}
     test:
       #variables:
       #  var1: value1
@@ -175,9 +178,11 @@ cd:
 #        my-target:
 #          env: demo-my-target
 #          targetName: demo-my-target
+%{~ endif ~}
     hotfix:
       env: hotfix
       #targetName: hotfix-target
+%{~ if gitflow.supportBranches ~}
     support:
       - match: 1.5.*
         env: demo
@@ -185,3 +190,4 @@ cd:
       - match: 1.3.*
         env: demo2
         targetName: demo2
+%{~ endif ~}
