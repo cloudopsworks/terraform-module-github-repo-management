@@ -212,7 +212,7 @@ resource "github_repository_file" "gitversion_file" {
   repository          = github_repository.repo[each.key].name
   content             = data.github_repository_file.gitversion_file[each.key].content
   file                = format("%s/gitversion.yaml", local.path_map["v5.10"])
-  commit_message      = "Add GitVersion Configuration"
+  commit_message      = format("Add GitVersion Configuration: %s", local.merged_cicd_config[each.key].gitflow.enabled ? "gitflow" : "githubflow")
   overwrite_on_create = try(each.value.overwrite_on_create, true)
   lifecycle {
     ignore_changes = [
