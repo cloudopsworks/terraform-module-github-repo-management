@@ -23,8 +23,11 @@
 | Name | Type |
 |------|------|
 | [github_repository.repo](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository) | resource |
+| [github_repository_file.gitversion_file](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_file) | resource |
 | [github_repository_file.pipeline_config](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_file) | resource |
 | [time_sleep.repo](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
+| [github_repository_file.gitversion_file](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/repository_file) | data source |
+| [github_repository_file.pipeline_config_tmpl](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/repository_file) | data source |
 
 ## Inputs
 
