@@ -163,8 +163,8 @@ data "github_repository_file" "pipeline_config_tmpl" {
     for k, v in local.repos : k => v
     if local.lang_map[v.language].ci
   }
-  repository = local.lang_map[each.value.language].template
-  file       = "${local.path_map[try(each.value.blueprint, "v5.10")]}/cloudopsworks-ci.yaml.tftpl"
+  repository = format("cloudopsworks/%s", local.lang_map[each.value.language].template)
+  file       = format("%s/cloudopsworks-ci.yaml.tftpl", local.path_map[try(each.value.blueprint, "v5.10")])
 }
 
 resource "github_repository_file" "pipeline_config" {
@@ -176,7 +176,7 @@ resource "github_repository_file" "pipeline_config" {
     if local.lang_map[v.language].ci
   }
   repository          = github_repository.repo[each.key].name
-  file                = "${local.path_map[try(each.value.blueprint, "v5.10")]}/cloudopsworks-ci.yaml"
+  file                = format("%s/cloudopsworks-ci.yaml", local.path_map[try(each.value.blueprint, "v5.10")])
   content             = templatestring(data.github_repository_file.pipeline_config_tmpl[each.key].content, local.merged_cicd_config[each.key])
   commit_message      = "Initial CI/CD Configuration"
   overwrite_on_create = try(each.value.overwrite_on_create, true)
@@ -195,24 +195,23 @@ resource "github_repository_file" "pipeline_config" {
 data "github_repository_file" "gitversion_file" {
   for_each = {
     for k, v in local.repos : k => v
-    if local.lang_map[v.language].gitversion && try(v.model_repository, "") == ""
+    if local.lang_map[v.language].gitversion && try(v.model_repository, "") == "" && try(v.blueprint, "v5.10") == "v5.10"
   }
-  repository = local.lang_map[each.value.language].template
-  branch     = "master"
-  file       = "${local.path_map["v5.10"]}/gitversion_${local.default_cicd_config.gitflow.enabled ? "gitflow" : "githubflow"}.yaml"
+  repository = format("cloudopsworks/%s", local.lang_map[each.value.language].template)
+  file       = format("%s/gitversion_%s.yaml", local.path_map["v5.10"], local.default_cicd_config.gitflow.enabled ? "gitflow" : "githubflow")
 }
 
 resource "github_repository_file" "gitversion_file" {
   for_each = {
     for k, v in local.repos : k => v
-    if local.lang_map[v.language].gitversion && try(v.model_repository, "") == ""
+    if local.lang_map[v.language].gitversion && try(v.model_repository, "") == "" && try(v.blueprint, "v5.10") == "v5.10"
   }
   depends_on = [
     time_sleep.repo
   ]
   repository          = github_repository.repo[each.key].name
   content             = data.github_repository_file.gitversion_file[each.key].content
-  file                = "${local.path_map["v5.10"]}/gitversion.yaml"
+  file                = format("%s/gitversion.yaml", local.path_map["v5.10"])
   commit_message      = "Add GitVersion Configuration"
   overwrite_on_create = try(each.value.overwrite_on_create, true)
   lifecycle {
