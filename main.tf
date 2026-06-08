@@ -60,8 +60,8 @@ locals {
       gitversion = true
     }
     terraform = {
-      template = "terraform-project-template"
-      ci       = false
+      template   = "terraform-project-template"
+      ci         = false
       gitversion = false
     }
     terraform-module = {
@@ -111,6 +111,23 @@ locals {
       supportBranchesEnabled = false
       requiredReviewers      = 1
     }
+  }
+  merged_cicd_config = {
+    for k, v in local.repos : k => merge(
+      local.default_cicd_config,
+      try(v.cicd_config, {}),
+      {
+        cd = merge(
+          local.default_cicd_config.cd,
+          try(v.cicd_config.cd, {})
+        )
+        gitflow = merge(
+          local.default_cicd_config.gitflow,
+          try(v.cicd_config.gitflow, {})
+        )
+      }
+    )
+    if local.lang_map[v.language].ci
   }
 }
 
@@ -165,7 +182,7 @@ resource "github_repository_file" "pipeline_config" {
   }
   repository          = github_repository.repo[each.key].name
   file                = "${local.path_map[try(each.value.blueprint, "v5.10")]}/cloudopsworks-ci.yaml"
-  content             = templatestring(data.github_repository_file.pipeline_config_tmpl[each.key].content, merge(local.default_cicd_config, try(each.value.cicd_config, {})))
+  content             = templatestring(data.github_repository_file.pipeline_config_tmpl[each.key].content, local.merged_cicd_config[each.key])
   commit_message      = "Initial CI/CD Configuration"
   overwrite_on_create = try(each.value.overwrite_on_create, true)
 
