@@ -320,8 +320,11 @@ Available targets:
 | Name | Type |
 |------|------|
 | [github_repository.repo](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository) | resource |
+| [github_repository_file.gitversion_file](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_file) | resource |
 | [github_repository_file.pipeline_config](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_file) | resource |
 | [time_sleep.repo](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
+| [github_repository_file.gitversion_file](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/repository_file) | data source |
+| [github_repository_file.pipeline_config_tmpl](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/repository_file) | data source |
 
 ## Inputs
 
@@ -347,21 +350,19 @@ File a GitHub [issue](https://github.com/cloudopsworks/terraform-module-github-r
 
 
 ## DevOps Tools
-[]()
+[Our Products](https://cloudopsworks.co/products/)
+[CI/CD Blueprint](https://cloudopsworks.co/cicd-blueprint/)
+[Open Source](https://cloudopsworks.co/open-source/)
+
 ## Slack Community
 
 
 ## Newsletter
-
-## Office Hours
-
-## Contributing
+[Resources Directory](https://cloudopsworks.co/resources/)
 
 ### Bug Reports & Feature Requests
 
 Please use the [issue tracker](https://github.com/cloudopsworks/terraform-module-github-repo-management/issues) to report any bugs or file feature requests.
-
-### Developing
 
 
 
@@ -452,4 +453,4 @@ This project is maintained by [Cloud Ops Works LLC][website].
   [share_reddit]: https://reddit.com/submit/?url=https://github.com/cloudopsworks/terraform-module-github-repo-management
   [share_facebook]: https://facebook.com/sharer/sharer.php?u=https://github.com/cloudopsworks/terraform-module-github-repo-management
   [share_email]: mailto:?subject=Terraform+GitHub+Repository+Management&body=https://github.com/cloudopsworks/terraform-module-github-repo-management
-  [beacon]: https://ga-beacon.cloudospworks.co/G-QMZVYYN2VN/cloudopsworks/terraform-module-github-repo-management?pixel&cs=github&cm=readme&an=terraform-module-github-repo-management
+  [beacon]: https://ga-beacon.cloudopsworks.co/G-QMZVYYN2VN/cloudopsworks/terraform-module-github-repo-management?pixel&cs=github&cm=readme&an=terraform-module-github-repo-management
