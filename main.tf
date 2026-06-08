@@ -164,12 +164,7 @@ data "github_repository_file" "pipeline_config_tmpl" {
     if local.lang_map[v.language].ci
   }
   repository = local.lang_map[each.value.language].template
-  branch     = "master"
   file       = "${local.path_map[try(each.value.blueprint, "v5.10")]}/cloudopsworks-ci.yaml.tftpl"
-
-  depends_on = [
-    time_sleep.repo
-  ]
 }
 
 resource "github_repository_file" "pipeline_config" {
