@@ -10,64 +10,79 @@
 locals {
   lang_map = {
     java = {
-      template = "java-app-template"
-      ci       = true
+      template   = "java-app-template"
+      ci         = true
+      gitversion = true
     }
     node = {
-      template = "node-app-template"
-      ci       = true
+      template   = "node-app-template"
+      ci         = true
+      gitversion = true
     }
     ruby = {
-      template = "ruby-app-template"
-      ci       = true
+      template   = "ruby-app-template"
+      ci         = true
+      gitversion = true
     }
     docker = {
-      template = "docker-app-template"
-      ci       = true
+      template   = "docker-app-template"
+      ci         = true
+      gitversion = true
     }
     go = {
-      template = "go-app-template"
-      ci       = true
+      template   = "go-app-template"
+      ci         = true
+      gitversion = true
     }
     dotnet = {
-      template = "dotnet-app-template"
-      ci       = true
+      template   = "dotnet-app-template"
+      ci         = true
+      gitversion = true
     }
     rust = {
-      template = "rust-app-template"
-      ci       = true
+      template   = "rust-app-template"
+      ci         = true
+      gitversion = true
     }
     kotlin = {
-      template = "kotlin-app-template"
-      ci       = true
+      template   = "kotlin-app-template"
+      ci         = true
+      gitversion = true
     }
     python = {
-      template = "python-app-template"
-      ci       = true
+      template   = "python-app-template"
+      ci         = true
+      gitversion = true
     }
     xcode = {
-      template = "xcode-app-template"
-      ci       = true
+      template   = "xcode-app-template"
+      ci         = true
+      gitversion = true
     }
     terraform = {
       template = "terraform-project-template"
-      ci       = true
+      ci       = false
+      gitversion = false
     }
     terraform-module = {
-      template = "terraform-module-template"
-      ci       = false
+      template   = "terraform-module-template"
+      ci         = false
+      gitversion = true
     }
     androidsdk = {
-      template = "androidsdk-app-template"
-      ci       = true
+      template   = "androidsdk-app-template"
+      ci         = true
+      gitversion = true
     }
     flutter = {
-      template = "fluttermobile-app-template"
-      ci       = true
+      template   = "fluttermobile-app-template"
+      ci         = true
+      gitversion = true
     }
     fluttermobile = {
-      template = "fluttermobile-app-template"
-      ci       = true
+      template   = "fluttermobile-app-template"
+      ci         = true
+      gitversion = true
     }
   }
   path_map = {
@@ -88,7 +103,14 @@ locals {
     build            = {}
     sonarqube        = {}
     dependency_track = {}
-    cd               = {}
+    cd = {
+      automatic = false
+    }
+    gitflow = {
+      enabled                = true
+      supportBranchesEnabled = false
+      requiredReviewers      = 1
+    }
   }
 }
 
@@ -119,6 +141,20 @@ resource "time_sleep" "repo" {
   }
 }
 
+data "github_repository_file" "pipeline_config_tmpl" {
+  for_each = {
+    for k, v in local.repos : k => v
+    if local.lang_map[v.language].ci
+  }
+  repository = local.lang_map[each.value.language].template
+  branch     = "master"
+  file       = "${local.path_map[try(each.value.blueprint, "v5.10")]}/cloudopsworks-ci.yaml.tftpl"
+
+  depends_on = [
+    time_sleep.repo
+  ]
+}
+
 resource "github_repository_file" "pipeline_config" {
   depends_on = [
     time_sleep.repo
@@ -129,10 +165,44 @@ resource "github_repository_file" "pipeline_config" {
   }
   repository          = github_repository.repo[each.key].name
   file                = "${local.path_map[try(each.value.blueprint, "v5.10")]}/cloudopsworks-ci.yaml"
-  content             = templatefile("${path.module}/templates/${each.value.language}/cloudopsworks-ci.yaml.tftpl", merge(local.default_cicd_config, try(each.value.cicd_config, {})))
+  content             = templatestring(data.github_repository_file.pipeline_config_tmpl[each.key].content, merge(local.default_cicd_config, try(each.value.cicd_config, {})))
   commit_message      = "Initial CI/CD Configuration"
   overwrite_on_create = try(each.value.overwrite_on_create, true)
 
+  lifecycle {
+    ignore_changes = [
+      content,
+      commit_message
+    ]
+  }
+}
+
+
+
+# Gitversion file
+data "github_repository_file" "gitversion_file" {
+  for_each = {
+    for k, v in local.repos : k => v
+    if local.lang_map[v.language].gitversion && try(v.model_repository, "") == ""
+  }
+  repository = local.lang_map[each.value.language].template
+  branch     = "master"
+  file       = "${local.path_map["v5.10"]}/gitversion_${local.default_cicd_config.gitflow.enabled ? "gitflow" : "githubflow"}.yaml"
+}
+
+resource "github_repository_file" "gitversion_file" {
+  for_each = {
+    for k, v in local.repos : k => v
+    if local.lang_map[v.language].gitversion && try(v.model_repository, "") == ""
+  }
+  depends_on = [
+    time_sleep.repo
+  ]
+  repository          = github_repository.repo[each.key].name
+  content             = data.github_repository_file.gitversion_file[each.key].content
+  file                = "${local.path_map["v5.10"]}/gitversion.yaml"
+  commit_message      = "Add GitVersion Configuration"
+  overwrite_on_create = try(each.value.overwrite_on_create, true)
   lifecycle {
     ignore_changes = [
       content,
