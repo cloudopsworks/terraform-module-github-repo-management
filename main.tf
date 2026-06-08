@@ -198,7 +198,7 @@ data "github_repository_file" "gitversion_file" {
     if local.lang_map[v.language].gitversion && try(v.model_repository, "") == "" && try(v.blueprint, "v5.10") == "v5.10"
   }
   repository = format("cloudopsworks/%s", local.lang_map[each.value.language].template)
-  file       = format("%s/gitversion_%s.yaml", local.path_map["v5.10"], local.merged_cicd_config.gitflow.enabled ? "gitflow" : "githubflow")
+  file       = format("%s/gitversion_%s.yaml", local.path_map["v5.10"], local.merged_cicd_config[each.key].gitflow.enabled ? "gitflow" : "githubflow")
 }
 
 resource "github_repository_file" "gitversion_file" {
