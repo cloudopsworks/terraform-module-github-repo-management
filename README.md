@@ -125,11 +125,12 @@ repositories: [] # (Optional) Repository specifications to create and configure.
 #        dist: "temurin" # (Optional) Runtime distribution when supported. Default: template-specific.
 #      sonarqube: # (Optional) SonarQube integration settings. Default: enabled by template.
 #        disabled: false # (Optional) Disable SonarQube when true. Default: false.
-#      branch: # (Optional) Branch-protection rendering settings. Default: protection enabled.
+#      branch: # (Optional) Branch-protection rendering settings. Default: protection enabled, Conventional Commits validation disabled.
 #        protectionEnabled: true # (Optional) Render branch-protection configuration into the CI/CD config. Default: true.
-#      enforce: # (Optional) Commit-message enforcement settings rendered into the CI/CD config. Default: enforcement disabled.
-#        conventionalCommitsEnabled: false # (Optional) Enforce Conventional Commits messages when true. Default: false.
+#        conventionalCommitsEnabled: false # (Optional) Enable Conventional Commits message validation on protected branches. Default: false.
 #        conventionalCommitsPattern: "^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-z0-9\\-]+\\))?: .+" # (Optional) Regex used to validate Conventional Commits messages. Default: shown value.
+#      enforce: # (Optional) Commit-message enforcement settings rendered into the CI/CD config. Default: enforcement disabled.
+#        conventionalCommitsEnforced: false # (Optional) Enforce (block) commits that do not match the Conventional Commits pattern when true. Default: false.
 #        customCommitsPatternEnabled: false # (Optional) Enforce a custom commit-message pattern when true. Default: false.
 #        customCommitsPattern: "PROJECT-[0-9]+.+" # (Optional) Regex used to validate custom commit messages, e.g. requiring an issue key. Default: shown value.
 #      dependency_track: # (Optional) Dependency-Track integration settings. Default: enabled by template.
@@ -249,8 +250,9 @@ repositories:
         disabled: false
       branch:
         protectionEnabled: true
-      enforce:
         conventionalCommitsEnabled: true
+      enforce:
+        conventionalCommitsEnforced: false
       dependency_track:
         disabled: false
         type: "Application"
@@ -327,8 +329,8 @@ Available targets:
 
 | Name | Version |
 |------|---------|
-| <a name="provider_github"></a> [github](#provider\_github) | ~> 6.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | n/a |
+| <a name="provider_github"></a> [github](#provider\_github) | 6.4.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
 
 ## Modules
 
