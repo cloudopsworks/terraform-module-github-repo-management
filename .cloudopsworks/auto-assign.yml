@@ -2,11 +2,12 @@
 addReviewers: true
 
 # Pull requests and issues: assign the PR creator or issue author.
-addAssignees: author
+addAssignees: cloudopsworks-dev
 
 # A list of reviewers to be added to pull requests (GitHub user name)
 # Teams are not supported (wontfix): https://github.com/kentaro-m/auto-assign/issues/39
 reviewers:
+  - cloudopsworks-bot
   - berahac
 
 # A number of reviewers added to the pull request

@@ -98,10 +98,19 @@ locals {
       if try(repo.prefix_name, "") != ""
   })
   default_cicd_config = {
-    access           = []
-    contributors     = {}
-    build            = {}
-    sonarqube        = {}
+    access       = []
+    contributors = {}
+    build        = {}
+    sonarqube    = {}
+    branch = {
+      protectionEnabled = true
+    }
+    enforce = {
+      conventionalCommitsEnabled  = false
+      conventionalCommitsPattern  = "^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-z0-9\\-]+\\))?: .+"
+      customCommitsPatternEnabled = false
+      customCommitsPattern        = "PROJECT-[0-9]+.+"
+    }
     dependency_track = {}
     cd = {
       automatic = false
@@ -124,6 +133,14 @@ locals {
         gitflow = merge(
           local.default_cicd_config.gitflow,
           try(v.cicd_config.gitflow, {})
+        )
+        branch = merge(
+          local.default_cicd_config.branch,
+          try(v.cicd_config.branch, {})
+        )
+        enforce = merge(
+          local.default_cicd_config.enforce,
+          try(v.cicd_config.enforce, {})
         )
       }
     )
