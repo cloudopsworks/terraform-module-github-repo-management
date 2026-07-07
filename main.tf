@@ -103,11 +103,12 @@ locals {
     build        = {}
     sonarqube    = {}
     branch = {
-      protectionEnabled = true
+      protectionEnabled          = true
+      conventionalCommitsEnabled = false
+      conventionalCommitsPattern = "^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-z0-9\\-]+\\))?: .+"
     }
     enforce = {
-      conventionalCommitsEnabled  = false
-      conventionalCommitsPattern  = "^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-z0-9\\-]+\\))?: .+"
+      conventionalCommitsEnforced = false
       customCommitsPatternEnabled = false
       customCommitsPattern        = "PROJECT-[0-9]+.+"
     }
