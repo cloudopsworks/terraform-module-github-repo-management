@@ -31,9 +31,21 @@ repositories: [] # (Optional) Repository specifications to create and configure.
 #        dist: "temurin" # (Optional) Runtime distribution when supported. Default: template-specific.
 #      sonarqube: # (Optional) SonarQube integration settings. Default: enabled by template.
 #        disabled: false # (Optional) Disable SonarQube when true. Default: false.
+#      branch: # (Optional) Branch-protection rendering settings. Default: protection enabled.
+#        protectionEnabled: true # (Optional) Render branch-protection configuration into the CI/CD config. Default: true.
+#      enforce: # (Optional) Commit-message enforcement settings rendered into the CI/CD config. Default: enforcement disabled.
+#        conventionalCommitsEnabled: false # (Optional) Enforce Conventional Commits messages when true. Default: false.
+#        conventionalCommitsPattern: "^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-z0-9\\-]+\\))?: .+" # (Optional) Regex used to validate Conventional Commits messages. Default: shown value.
+#        customCommitsPatternEnabled: false # (Optional) Enforce a custom commit-message pattern when true. Default: false.
+#        customCommitsPattern: "PROJECT-[0-9]+.+" # (Optional) Regex used to validate custom commit messages, e.g. requiring an issue key. Default: shown value.
 #      dependency_track: # (Optional) Dependency-Track integration settings. Default: enabled by template.
 #        disabled: false # (Optional) Disable Dependency-Track when true. Default: false.
 #        type: "Application" # (Optional) Project classifier. Valid values: Application, Library. Default: Application.
-#      cd: # (Optional) Continuous-delivery settings rendered into the CI/CD config. Default: {}.
+#      cd: # (Optional) Continuous-delivery settings rendered into the CI/CD config. Default: automatic disabled.
+#        automatic: false # (Optional) Enable automatic continuous deployment. Default: false.
 #        cloud: "aws" # (Optional) Deployment cloud. Valid values depend on template; common values: aws, azure, gcp. Default: unset.
 #        cloud_type: "eks" # (Optional) Deployment target type such as eks, lambda, elasticbeanstalk, aks, webapp, function, gke. Default: unset.
+#      gitflow: # (Optional) Git workflow settings rendered into the CI/CD config. Default: GitFlow enabled.
+#        enabled: true # (Optional) Use GitFlow branching when true; false selects GitHubFlow (also controls the generated gitversion.yaml). Default: true.
+#        supportBranchesEnabled: false # (Optional) Enable support/* branch handling. Default: false.
+#        requiredReviewers: 1 # (Optional) Number of required pull-request reviewers. Default: 1.
