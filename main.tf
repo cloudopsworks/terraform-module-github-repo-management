@@ -125,8 +125,15 @@ locals {
   merged_cicd_config = {
     for k, v in local.repos : k => merge(
       local.default_cicd_config,
-      try(v.cicd_config, {}),
       {
+        access = merge(
+          local.default_cicd_config.access,
+          try(v.cicd_config.access, [])
+        )
+        contributors = merge(
+          local.default_cicd_config.contributors,
+          try(v.cicd_config.contributors, {})
+        )
         cd = merge(
           local.default_cicd_config.cd,
           try(v.cicd_config.cd, {})
