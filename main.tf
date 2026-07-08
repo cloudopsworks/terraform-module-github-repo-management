@@ -98,10 +98,19 @@ locals {
       if try(repo.prefix_name, "") != ""
   })
   default_cicd_config = {
-    access       = []
-    contributors = {}
-    build        = {}
-    sonarqube    = {}
+    access = {
+      reviewers = []
+      owners    = []
+    }
+    contributors = {
+      admin    = []
+      triage   = []
+      push     = []
+      pull     = []
+      maintain = []
+    }
+    build     = {}
+    sonarqube = {}
     branch = {
       protectionEnabled          = true
       conventionalCommitsEnabled = false
@@ -126,10 +135,10 @@ locals {
     for k, v in local.repos : k => merge(
       local.default_cicd_config,
       {
-        access = toset(concat(
+        access = merge(
           local.default_cicd_config.access,
-          try(v.cicd_config.access, [])
-        ))
+          try(v.cicd_config.access, {})
+        )
         contributors = merge(
           local.default_cicd_config.contributors,
           try(v.cicd_config.contributors, {})
