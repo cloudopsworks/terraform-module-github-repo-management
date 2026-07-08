@@ -132,7 +132,7 @@ repositories: [] # (Optional) Repository specifications to create and configure.
 #      enforce: # (Optional) Commit-message enforcement settings rendered into the CI/CD config. Default: enforcement disabled.
 #        conventionalCommitsEnforced: false # (Optional) Enforce (block) commits that do not match the Conventional Commits pattern when true. Default: false.
 #        customCommitsPatternEnabled: false # (Optional) Enforce a custom commit-message pattern when true. Default: false.
-#        customCommitsPattern: "PROJECT-[0-9]+.+" # (Optional) Regex used to validate custom commit messages, e.g. requiring an issue key. Default: shown value.
+#        customCommitsPatternRegex: "PROJECT-[0-9]+.+" # (Optional) Regex used to validate custom commit messages, e.g. requiring an issue key. Default: shown value.
 #      dependency_track: # (Optional) Dependency-Track integration settings. Default: enabled by template.
 #        disabled: false # (Optional) Disable Dependency-Track when true. Default: false.
 #        type: "Application" # (Optional) Project classifier. Valid values: Application, Library. Default: Application.
@@ -329,8 +329,8 @@ Available targets:
 
 | Name | Version |
 |------|---------|
-| <a name="provider_github"></a> [github](#provider\_github) | ~> 6.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | n/a |
+| <a name="provider_github"></a> [github](#provider\_github) | 6.4.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
 
 ## Modules
 
