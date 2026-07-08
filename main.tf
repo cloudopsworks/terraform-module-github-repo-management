@@ -119,7 +119,7 @@ locals {
     enforce = {
       conventionalCommitsEnforced = false
       customCommitsPatternEnabled = false
-      customCommitsPattern        = "PROJECT-[0-9]+.+"
+      customCommitsPatternRegex   = "PROJECT-[0-9]+.+"
     }
     dependency_track = {}
     cd = {
