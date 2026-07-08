@@ -126,10 +126,10 @@ locals {
     for k, v in local.repos : k => merge(
       local.default_cicd_config,
       {
-        access = merge(
+        access = toset(concat(
           local.default_cicd_config.access,
           try(v.cicd_config.access, [])
-        )
+        ))
         contributors = merge(
           local.default_cicd_config.contributors,
           try(v.cicd_config.contributors, {})
