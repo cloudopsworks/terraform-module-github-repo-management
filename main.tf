@@ -211,7 +211,7 @@ resource "github_repository_file" "pipeline_config" {
   }
   repository          = github_repository.repo[each.key].name
   file                = format("%s/cloudopsworks-ci.yaml", local.path_map[try(each.value.blueprint, "v5.10")])
-  content             = templatestring(data.github_repository_file.pipeline_config_tmpl[each.key].content, local.merged_cicd_config[each.key])
+  content             = try(each.value.blueprint, "v5.10") == "v5.10" ? templatestring(data.github_repository_file.pipeline_config_tmpl[each.key].content, local.merged_cicd_config[each.key]) : ""
   commit_message      = "Initial CI/CD Configuration"
   overwrite_on_create = try(each.value.overwrite_on_create, true)
 
